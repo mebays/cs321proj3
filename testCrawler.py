@@ -8,6 +8,7 @@ import urlparse
 class Crawler(object):
     """docstring for Crawler"""
 
+    # think about changing this to add new urls
     def __init__(self):
         self.soup = None                                        # Beautiful Soup object
         self.current_page   = "https://uoregon.edu/"          # Current page's address
