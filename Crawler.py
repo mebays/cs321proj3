@@ -7,6 +7,8 @@ import urllib2
 import itertools
 import random
 import urlparse
+import time
+import csv
 
 
 class Crawler(object):
@@ -39,7 +41,7 @@ class Crawler(object):
             for link in [h.get('href') for h in self.soup.find_all('a')]:
                 if link is not None:
                     print "Found link: '" + link + "'"
-                    if link.startswith('http') and u'uoergon.edu' in link:
+                    if link.startswith('http') and u'uoregon.edu' in link:
                         page_links.append(link)
                         print "Adding link" + link + "\n"
                     elif link.startswith('//'):
@@ -64,13 +66,28 @@ class Crawler(object):
         self.counter+=1
 
     def run(self):
-
+        start = time.time()
         # Crawl 3 webpages (or stop if all url has been fetched)
-        while len(self.visited_links) < 100 or (self.visited_links == self.links):
+        while len(self.visited_links) < 50 or (self.visited_links == self.links):
             self.open()
 
         for link in self.links:
             print link
+        csvFile = open("C:\\Users\\mebays\\Documents\\Crawler\\csvFile\\csvData.csv", mode="w")
+        csvWriter = csv.writer(csvFile)
+        csvWriter.writerow(['Id Number', 'File Name', 'URL'])
+        count = 0
+        for link in self.links:
+            fileName = link.replace(":","_").replace("/","_").replace(".","_")
+            with open("C:\\Users\\mebays\\Documents\\Crawler\\htmlFile\\"+fileName+".txt", mode="w") as outfile:
+                result = urllib2.urlopen(link)
+                source_code = result.read()
+                outfile.write(source_code)
+            csvWriter.writerow([count, fileName, link])
+        
+        csvFile.close()
+        print len(self.links)
+        print time.time()-start, 'seconds'
 
 if __name__ == '__main__':
     C = Crawler()
