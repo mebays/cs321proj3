@@ -39,7 +39,7 @@ class Crawler(object):
         page_links = []
         try :
             for link in [h.get('href') for h in self.soup.find_all('a')]:
-                if link is not None:
+                if link is not None and u'calendar' not in link:
                     print "Found link: '" + link + "'"
                     if link.startswith('http') and u'uoregon.edu' in link:
                         page_links.append(link)
@@ -78,13 +78,17 @@ class Crawler(object):
         csvWriter.writerow(['Id Number', 'File Name', 'URL'])
         count = 0
         for link in self.links:
-            fileName = link.replace(":","_").replace("/","_").replace(".","_")
-            with open("C:\\Users\\mebays\\Documents\\Crawler\\htmlFile\\"+fileName+".txt", mode="w") as outfile:
-                result = urllib2.urlopen(link)
-                source_code = result.read()
-                outfile.write(source_code)
-            csvWriter.writerow([count, fileName, link])
-        
+            try:
+                fileName = link.replace(":","_").replace("/","_").replace(".","_").replace("?","-").replace("=","-")
+                with open("C:\\Users\\mebays\\Documents\\Crawler\\htmlFile\\"+fileName+".txt", mode="w") as outfile:
+                    result = urllib2.urlopen(link)
+                    source_code = result.read()
+                    outfile.write(source_code)
+                csvWriter.writerow([count, fileName, link])
+                count += 1
+            except:
+                pass
+
         csvFile.close()
         print len(self.links)
         print time.time()-start, 'seconds'
