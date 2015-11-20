@@ -10,7 +10,7 @@ import csv
 
 class Crawler(object):
 
-    '''Contructor'''
+    '''Contructor '''
     def __init__(self):
         self.soup = None  # Beautiful Soup object
         self.current_page = "http://uoregon.edu/"  # Current page's address
