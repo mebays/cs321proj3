@@ -6,11 +6,16 @@ import random
 import urlparse
 import time
 import csv
+import requests
 
 
 class Crawler(object):
 
+<<<<<<< HEAD
     '''Contructor'''
+=======
+    '''Contructor '''
+>>>>>>> fea462c2dc7431d873e83f667bab990cc7e452c4
     def __init__(self):
         self.soup = None  # Beautiful Soup object
         self.current_page = "http://uoregon.edu/"  # Current page's address
@@ -28,11 +33,16 @@ class Crawler(object):
         # Try to open url incase there is a file extension it will through the
         # exception page Error for Error 404 or 500 data
         try:
+            # html = requests.get(self.current_page).text
             res = urllib2.urlopen(self.current_page)
             html_code = res.read()
             self.visited_links.add(self.current_page)
             self.numberVisited[self.current_page] = 1
+<<<<<<< HEAD
 
+=======
+            # self.soup = BeautifulSoup(html)
+>>>>>>> fea462c2dc7431d873e83f667bab990cc7e452c4
             self.soup = BeautifulSoup(html_code)
         except:
             "page Error"
@@ -44,7 +54,13 @@ class Crawler(object):
                 if link is not None and u'calendar' not in link and u'.com' \
                         not in link and u'Shibboleth' not in link and u'.pdf' \
                         not in link and u'.gzip' not in link and u'.zip' \
-                        not in link and u'.aspx' not in link:
+                        not in link and u'.aspx' not in link \
+                        and u'search' not in link \
+                        and u'jobs' not in link \
+                        and u'?' not in link \
+                        and u'&' not in link \
+                        and u'=' not in link \
+                        and u'#' not in link:
                     print "Found link: '" + link + "'"
 
                     if link.startswith('http') and u'uoregon.edu' in link:
@@ -90,15 +106,19 @@ class Crawler(object):
         start = time.time()
 
         # Crawl 100 webpages (or stop if all url has been fetched)
+<<<<<<< HEAD
         while len(self.visited_links) < 100 or \
+=======
+        while len(self.visited_links) < 700 or \
+>>>>>>> fea462c2dc7431d873e83f667bab990cc7e452c4
                 (self.visited_links == self.links):
             self.open()
 
         for link in self.links:
             print link
-
-        csvFile = open("/home/mebays/Documents/cs321/proj3" +
-                       "/csvFiles/csvData2.csv", mode="w")
+        
+        csvFile = open("C:/Users/Matthew/Documents/CS321/cs321proj3" +
+                       "/csvFiles/urlCSVdata.csv", mode="w")
         csvWriter = csv.writer(csvFile)
         csvWriter.writerow(['Id Number', 'Number of times',
                             'File Name', 'URL', 'title', 'text'])
@@ -106,22 +126,40 @@ class Crawler(object):
         for link in self.links:
             try:
                 # Replace special characters for a file Name
+<<<<<<< HEAD
                 fileName = link.replace(":", "_").replace("/", "_").\
                     replace(".", "_").replace("?", "-").replace("=", "-").\
                     replace("&", "_").replace("%", "_")
                 with open("/home/mebays/Documents/cs321/proj3" +
                           "/htmlFiles2/"+fileName+".txt", mode="w") as outfile:
+=======
+                fileName = link.replace(":", "").replace("/", "").\
+                    replace(".", "").replace("?", "").replace("=", "").\
+                    replace("&", "").replace("%", "")
+                with open("C:/Users/Matthew/Documents/CS321/cs321proj3" +
+                          "/htmlFiles/"+fileName+".txt", mode="w") as outfile:
+>>>>>>> fea462c2dc7431d873e83f667bab990cc7e452c4
                     result = urllib2.urlopen(link)
+                    # result = requests.get(link).text
                     source_code = result.read()
                     outfile.write(source_code)
+<<<<<<< HEAD
+=======
+                    # outfile.write(result)
+>>>>>>> fea462c2dc7431d873e83f667bab990cc7e452c4
 
                 soup_code = BeautifulSoup(source_code)
+                # soup_code = BeautifulSoup(result)
                 title = soup_code.title.string.encode('ascii', 'ignore')
 
                 for script in soup_code(["script", "style"]):
                     script.extract()
 
+<<<<<<< HEAD
                 text = soup_code.get_text().replace("\n", " ")
+=======
+                text = soup_code.get_text()
+>>>>>>> fea462c2dc7431d873e83f667bab990cc7e452c4
                 csvWriter.writerow([count,
                                     self.numberVisited[link],
                                     fileName,
@@ -135,6 +173,7 @@ class Crawler(object):
 
         csvFile.close()
         print len(self.links)
+       
         print time.time()-start, 'seconds'
 
 if __name__ == '__main__':
