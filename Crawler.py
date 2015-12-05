@@ -9,8 +9,8 @@ import csv
 
 
 class Crawler(object):
-    """docstring for Crawler"""
 
+    '''Contructor'''
     def __init__(self):
         self.soup = None  # Beautiful Soup object
         self.current_page = "http://uoregon.edu/"  # Current page's address
@@ -20,64 +20,76 @@ class Crawler(object):
 
         self.counter = 0  # Simple counter for debug purpose
 
+    '''open url and acquire list of urls'''
     def open(self):
 
         # Open url
         print self.counter, ":", self.current_page
+        # Try to open url incase there is a file extension it will through the
+        # exception page Error for Error 404 or 500 data
         try:
             res = urllib2.urlopen(self.current_page)
             html_code = res.read()
             self.visited_links.add(self.current_page)
             self.numberVisited[self.current_page] = 1
 
-        # Fetch every links
             self.soup = BeautifulSoup(html_code)
         except:
             "page Error"
-
+        # Fetch all Links
         page_links = []
         try:
             for link in [h.get('href') for h in self.soup.find_all('a')]:
+                # check to avoid these in the link data
                 if link is not None and u'calendar' not in link and u'.com' \
                         not in link and u'Shibboleth' not in link and u'.pdf' \
                         not in link and u'.gzip' not in link and u'.zip' \
                         not in link and u'.aspx' not in link:
                     print "Found link: '" + link + "'"
+
                     if link.startswith('http') and u'uoregon.edu' in link:
                         page_links.append(link)
                         print "Adding link" + link + "\n"
+
                     elif link.startswith('//'):
                         parts = urlparse.urlparse(self.current_page)
                         page_links.append(parts.scheme + ":" + link)
                         print "Adding link " + parts.scheme + ":" + link
+
                     elif link.startswith('/'):
                         parts = urlparse.urlparse(self.current_page)
                         page_links.append(parts.scheme + '://' +
                                           parts.netloc + link)
                         print "Adding link " + parts.scheme + '://' + \
                             parts.netloc + link + "\n"
+
                     else:
                         pass
 
-        except Exception, ex:  # Magnificent exception handling
+        except Exception, ex:
             print ex
 
-        # Update links
+        # Checks if link is in Dictionary if so add 1 if not add it and place 1
+        # for the count
         for link in page_links:
             if link in self.numberVisited:
                 self.numberVisited[link] += 1
             else:
                 self.numberVisited[link] = 1
+
+        # Update the links data
         self.links = self.links.union(set(page_links))
 
         # Choose a random url from non-visited set
         self.current_page = random.sample(self.links.difference(
             self.visited_links), 1)[0]
+
         self.counter += 1
 
     def run(self):
         start = time.time()
-        # Crawl 3 webpages (or stop if all url has been fetched)
+
+        # Crawl 100 webpages (or stop if all url has been fetched)
         while len(self.visited_links) < 100 or \
                 (self.visited_links == self.links):
             self.open()
@@ -93,6 +105,7 @@ class Crawler(object):
         count = 0
         for link in self.links:
             try:
+                # Replace special characters for a file Name
                 fileName = link.replace(":", "_").replace("/", "_").\
                     replace(".", "_").replace("?", "-").replace("=", "-").\
                     replace("&", "_").replace("%", "_")
@@ -101,10 +114,13 @@ class Crawler(object):
                     result = urllib2.urlopen(link)
                     source_code = result.read()
                     outfile.write(source_code)
+
                 soup_code = BeautifulSoup(source_code)
                 title = soup_code.title.string.encode('ascii', 'ignore')
+
                 for script in soup_code(["script", "style"]):
                     script.extract()
+
                 text = soup_code.get_text().replace("\n", " ")
                 csvWriter.writerow([count,
                                     self.numberVisited[link],
@@ -113,6 +129,7 @@ class Crawler(object):
                                     title,
                                     text.encode('ascii', 'ignore')])
                 count += 1
+
             except:
                 pass
 
