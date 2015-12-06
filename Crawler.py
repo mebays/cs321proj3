@@ -51,7 +51,14 @@ class Crawler(object):
                         and u'?' not in link \
                         and u'&' not in link \
                         and u'=' not in link \
-                        and u'#' not in link:
+                        and u'#' not in link \
+			and u'.jpg' not in link \
+			and u'.ppsx' not in link \
+			and u'.pptx' not in link \
+			and u'mp4' not in link \
+			and u'png' not in link \
+			and u'php' not in link \
+			and u'jpeg' not in link:
                     print "Found link: '" + link + "'"
 
                     if link.startswith('http') and u'uoregon.edu' in link:
